@@ -1,5 +1,4 @@
-import { reqMaterials,reqAddMaterials } from '@/api'
-import Vue from 'vue';
+import { reqMaterials,reqAddMaterials,reqEditMaterials,reqDelMaterials } from '@/api'
 
 const state = {
     mateList: [],
@@ -10,20 +9,8 @@ const mutations = {
     },
     SEARCHMATE(state, searchList) {
         state.mateList = searchList
-    },
-    EDITMATE(state, editmate) {
-        for (let item of state.mateList) {
-            if (item.mid === editmate.mid) {
-                Vue.delete(state.mateList, item)
-                Vue.set(state.mateList, 0, editmate)
-            }
-            
-        }
-    },
-    ADDMATE(state, addmate,commit) {
-        Vue.set(state.mateList, '', addmate)
-        
-    },
+    }
+    
 };
 const actions = {
     // 获取材料列表信息
@@ -33,13 +20,27 @@ const actions = {
             commit('GETMATELIST', result.data)
         }
     },
-    async addMaterials({disptch}){
-        let result = await reqAddMaterials();
-        console.log(result)
-        // if (result.code == 200) {
-        //     disptch('getMateList')
-        // }
-    }
+    // 材料入库
+    async addMaterials({dispatch},mateDetail){
+        let result = await reqAddMaterials(mateDetail);
+        if (result.code == 200) {
+           await dispatch('getMateList')
+        }
+    },
+    // 材料信息修改
+    async editMaterials({dispatch},mateDetail){
+        let result = await reqEditMaterials(mateDetail);
+        if (result.code == 200) {
+           await dispatch('getMateList')
+        }
+    },
+    // 清库
+    async delMate({dispatch},mateDetail){
+        let result = await reqDelMaterials(mateDetail);
+        if (result.code == 200) {
+           await dispatch('getMateList')
+        }
+    },
 
 };
 const getters = {
